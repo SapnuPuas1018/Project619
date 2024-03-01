@@ -5,6 +5,7 @@ date   - 21/02/2024
 
 import socket
 from tqdm import tqdm
+import concurrent.futures
 
 IP = '127.0.0.1'
 
@@ -37,8 +38,11 @@ def main():
     """
     main Function
     """
-    for port in tqdm(range(20, 1025)):
-        scan_port(port)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as runner:
+        runners_list = []
+        for port in tqdm(range(20, 1025)):
+            runners_list.append(runner.submit(scan_port, port))
+        concurrent.futures.wait(runners_list)
 
 
 if __name__ == "__main__":
